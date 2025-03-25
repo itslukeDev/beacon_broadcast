@@ -3,8 +3,8 @@ description: Demonstrates how to use the beacon_broadcast plugin.
 publish_to: "none"
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ">=3.4.4 <4.0.0"
+  flutter: ">=3.22.3 <4.0.0"
 
 dependencies:
   flutter:
