@@ -1,3 +1,8 @@
+## 0.3.2
+
+Refactored code for null safety to be compatible with Dart versions 3.0.0+
+Bumped the minimum dart version to 3.4.4
+
 ## 0.3.1
 
 Added support for android apps targetting SDK 31 and above
@@ -22,26 +27,23 @@ Updated the documentation
 
 ## 0.2.0
 
-Added option to set manufacturer and layout for Android. 
-
+Added option to set manufacturer and layout for Android.
 
 ## 0.1.2
 
 Updates in the documentation
 
-
 ## 0.1.1
 
 Added method for checking if transmission is supported on the device.
-
 
 ## 0.1.0
 
 First stable version of the app. No major changes
 
-
 ## 0.0.1
 
 Initial version of the library. This version includes:
-* starting and stopping beacon advertising
-* setting beacon UUID, major id, minor id, transmission power and identifier 
+
+- starting and stopping beacon advertising
+- setting beacon UUID, major id, minor id, transmission power and identifier
