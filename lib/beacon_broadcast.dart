@@ -23,16 +23,15 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class BeaconBroadcast {
-  static const String ALTBEACON_LAYOUT =
+  static const String altBeaconLayout =
       'm:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25';
-  static const String EDDYSTONE_TLM_LAYOUT =
+  static const String eddyStoneTlmLayout =
       'x,s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15';
-  static const String EDDYSTONE_UID_LAYOUT =
+  static const String eddyStoneUidLayout =
       's:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19';
-  static const String EDDYSTONE_URL_LAYOUT =
+  static const String eddyStoneUrlLayout =
       's:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-21v';
-  static const String URI_BEACON_LAYOUT =
-      's:0-1=fed8,m:2-2=00,p:3-3:-41,i:4-21v';
+  static const String uriBeaconLayout = 's:0-1=fed8,m:2-2=00,p:3-3:-41,i:4-21v';
 
   String? _uuid;
   int? _majorId;
@@ -44,10 +43,10 @@ class BeaconBroadcast {
   int? _manufacturerId;
   List<int>? _extraData;
 
-  static const MethodChannel _methodChannel =
+  static final MethodChannel _methodChannel =
       const MethodChannel('pl.pszklarska.beaconbroadcast/beacon_state');
 
-  static const EventChannel _eventChannel =
+  static final EventChannel _eventChannel =
       const EventChannel('pl.pszklarska.beaconbroadcast/beacon_events');
 
   /// Sets UUID for beacon.
@@ -123,14 +122,14 @@ class BeaconBroadcast {
 
   /// Sets beacon layout.
   ///
-  /// This parameter is **Android only**. It's optional, the default is [ALTBEACON_LAYOUT].
+  /// This parameter is **Android only**. It's optional, the default is [altBeaconLayout].
   /// You can use one of the options:
   /// <ul>
-  /// <li>[ALTBEACON_LAYOUT]
-  /// <li>[EDDYSTONE_TLM_LAYOUT]
-  /// <li>[EDDYSTONE_UID_LAYOUT]
-  /// <li>[EDDYSTONE_URL_LAYOUT]
-  /// <li>[URI_BEACON_LAYOUT]
+  /// <li>[altBeaconLayout]
+  /// <li>[eddyStoneTlmLayout]
+  /// <li>[eddyStoneUidLayout]
+  /// <li>[eddyStoneUrlLayout]
+  /// <li>[uriBeaconLayout]
   /// </ul>
   ///
   /// **For iOS**, layout will be always iBeacon.
@@ -165,7 +164,7 @@ class BeaconBroadcast {
   /// This parameter is optional.
   BeaconBroadcast setExtraData(List<int> extraData) {
     if (extraData.any((value) => value < 0 || value > 255)) {
-      throw new IllegalArgumentException(
+      throw IllegalArgumentException(
           "Illegal arguments! Extra data values must be within a byte range 0-255");
     }
     _extraData = extraData;
@@ -187,18 +186,18 @@ class BeaconBroadcast {
   /// quits the app, the system stops advertising the device as a peripheral over Bluetooth.
   Future<void> start() async {
     if (_uuid == null || _uuid!.isEmpty) {
-      throw new IllegalArgumentException(
+      throw IllegalArgumentException(
           "Illegal arguments! UUID must not be null or empty: UUID: $_uuid");
     }
 
-    if ((_layout == null || _layout == ALTBEACON_LAYOUT) &&
+    if ((_layout == null || _layout == altBeaconLayout) &&
         (_majorId == null || _minorId == null)) {
-      throw new IllegalArgumentException(
+      throw IllegalArgumentException(
           "Illegal arguments! MajorId and minorId must not be null or empty: "
           "majorId: $_majorId, minorId: $_minorId");
     }
 
-    Map params = <String, dynamic>{
+    final params = <String, dynamic>{
       "uuid": _uuid,
       "majorId": _majorId,
       "minorId": _minorId,
@@ -240,20 +239,19 @@ class BeaconBroadcast {
   /// * [BeaconStatus.notSupportedCannotGetAdvertiser] device does not have a compatible chipset
   /// or driver
   Future<BeaconStatus> checkTransmissionSupported() async {
-    var isTransmissionSupported =
+    final isTransmissionSupported =
         await _methodChannel.invokeMethod('isTransmissionSupported');
     return _beaconStatusFromInt(isTransmissionSupported);
   }
 }
 
 class IllegalArgumentException implements Exception {
-  final message;
+  final String message;
 
-  IllegalArgumentException(this.message);
+  const IllegalArgumentException(this.message);
 
-  String toString() {
-    return "IllegalArgumentException: $message";
-  }
+  @override
+  String toString() => "IllegalArgumentException: $message";
 }
 
 enum BeaconStatus {
@@ -270,15 +268,16 @@ enum BeaconStatus {
   notSupportedCannotGetAdvertiser
 }
 
-Map<int, BeaconStatus> _intToBeaconStatus = {
+final Map<int, BeaconStatus> _intToBeaconStatus = {
   0: BeaconStatus.supported,
   1: BeaconStatus.notSupportedMinSdk,
   2: BeaconStatus.notSupportedBle,
 };
 
 BeaconStatus _beaconStatusFromInt(int? value) {
-  if (!_intToBeaconStatus.containsKey(value))
+  if (value == null || !_intToBeaconStatus.containsKey(value)) {
     return BeaconStatus.notSupportedCannotGetAdvertiser;
+  }
   return _intToBeaconStatus[value]!;
 }
 
@@ -293,7 +292,7 @@ enum AdvertiseMode {
   lowLatency,
 }
 
-Map<int, AdvertiseMode> _intToAdvertiseMode = {
+final Map<int, AdvertiseMode> _intToAdvertiseMode = {
   0: AdvertiseMode.lowPower,
   1: AdvertiseMode.balanced,
   2: AdvertiseMode.lowLatency,

@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -17,29 +19,31 @@ class _MyAppState extends State<MyApp> {
   static const int transmissionPower = -59;
   static const String identifier = 'com.example.myDeviceRegion';
   static const AdvertiseMode advertiseMode = AdvertiseMode.lowPower;
-  static const String layout = BeaconBroadcast.ALTBEACON_LAYOUT;
+  static const String layout = BeaconBroadcast.altBeaconLayout;
   static const int manufacturerId = 0x0118;
-  static const List<int> extraData = [100];
+  static final List<int> extraData = [100];
 
-  BeaconBroadcast beaconBroadcast = BeaconBroadcast();
-
+  late BeaconBroadcast beaconBroadcast;
   bool _isAdvertising = false;
-  BeaconStatus _isTransmissionSupported;
-  StreamSubscription<bool> _isAdvertisingSubscription;
+  BeaconStatus? _isTransmissionSupported;
+  StreamSubscription<bool>? _isAdvertisingSubscription;
 
   @override
   void initState() {
     super.initState();
+    beaconBroadcast = BeaconBroadcast();
+
     beaconBroadcast
         .checkTransmissionSupported()
-        .then((isTransmissionSupported) {
+        .then((BeaconStatus? isTransmissionSupported) {
       setState(() {
         _isTransmissionSupported = isTransmissionSupported;
       });
     });
 
-    _isAdvertisingSubscription =
-        beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
+    _isAdvertisingSubscription = beaconBroadcast
+        .getAdvertisingStateChange()
+        .listen((bool isAdvertising) {
       setState(() {
         _isAdvertising = isAdvertising;
       });
@@ -61,16 +65,24 @@ class _MyAppState extends State<MyApp> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Is transmission supported?',
-                    style: Theme.of(context).textTheme.headline5),
-                Text('$_isTransmissionSupported',
-                    style: Theme.of(context).textTheme.subtitle1),
-                Container(height: 16.0),
-                Text('Has beacon started?',
-                    style: Theme.of(context).textTheme.headline5),
-                Text('$_isAdvertising',
-                    style: Theme.of(context).textTheme.subtitle1),
-                Container(height: 16.0),
+                Text(
+                  'Is transmission supported?',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(
+                  '$_isTransmissionSupported',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  'Has beacon started?',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(
+                  '$_isAdvertising',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16.0),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
@@ -86,7 +98,7 @@ class _MyAppState extends State<MyApp> {
                           .setExtraData(extraData)
                           .start();
                     },
-                    child: Text('START'),
+                    child: const Text('START'),
                   ),
                 ),
                 Center(
@@ -94,11 +106,13 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () {
                       beaconBroadcast.stop();
                     },
-                    child: Text('STOP'),
+                    child: const Text('STOP'),
                   ),
                 ),
-                Text('Beacon Data',
-                    style: Theme.of(context).textTheme.headline5),
+                Text(
+                  'Beacon Data',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
                 Text('UUID: $uuid'),
                 Text('Major id: $majorId'),
                 Text('Minor id: $minorId'),
