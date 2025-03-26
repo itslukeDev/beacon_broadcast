@@ -7,7 +7,7 @@ homepage: https://github.com/pszklarska/beacon_broadcast
 
 environment:
   sdk: ">=3.4.4 <4.0.0"
-  flutter: ">=3.22.3 <4.0.0"
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:
